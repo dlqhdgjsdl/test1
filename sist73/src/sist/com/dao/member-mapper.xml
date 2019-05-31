@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sist.com.model.SiMember">
+    
+  <select id="idMemberCheck" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT ID FROM MEMBERSI
+    WHERE ID=#{VALUE}     
+  </select>
+  <sql id="zipCodeSelectsql">
+    select ZIPCODE,SIDO,GUGU,DONG,NVL(BUNJI,'')BUNJI,SEQ	
+    from zipcode    
+  </sql>
+  
+  <select id="zipCodeSelect" resultType="zipcode" parameterType="java.lang.String">
+    <include refid="zipCodeSelectsql"></include>
+    WHERE DONG LIKE '%'||#{VALUE}||'%'
+
+  </select>  
+  <insert id="insertMember" parameterType="member">
+    <selectKey keyProperty="no" order="BEFORE"
+                resultType="java.lang.Integer">
+         SELECT MEMBERSI_SEQ.NEXTVAL FROM DUAL       
+    </selectKey>
+     INSERT INTO MEMBERSI VALUES(#{no},#{name},#{id},#{password},
+         #{gender},#{birth},#{address},#{email},#{tel},#{cp},#{answer},sysdate)
+  </insert>
+   <select id="loginCheck" parameterType="java.lang.String" resultType="java.lang.String">
+      SELECT PASSWORD FROM ADMINMEMBER
+      WHERE ID=#{VALUE}
+   </select>
+   <sql id="selectSiMemberSQL">
+        SELECT NO ,NAME,ID,PASSWORD,GENDER,TO_CHAR(BIRTH,'YY/MM/DD')BIRTH,
+     	ADDRESS,EMAIL,TEL,CP,ANSWER,
+     	TO_CHAR(REGDATE,'YYYY/MM/DD')REGDATE
+     	FROM MEMBERSI  	    
+   </sql>   
+   <delete id="deleteMember" parameterType="java.lang.Integer">
+       DELETE FROM MEMBERSI
+       WHERE NO=#{VALUE}
+   </delete>
+   <select id="selectSiMember"  resultType="member" parameterType="java.util.HashMap">
+        <include refid="selectSiMemberSQL"></include>
+        <if test="query!=null">
+        WHERE ${query} LIKE '%'||#{data}||'%'
+        </if>
+        
+   </select>   
+   <select id="selectMemberInfo" parameterType="java.lang.Integer" resultType="member">
+    <include refid="selectSiMemberSQL"></include>
+    WHERE NO=#{VALUE}
+   
+   </select>   
+   
+   <update id="updateMember" parameterType="member">
+      UPDATE MEMBERSI SET
+      NAME=#{name},id=#{id},password=#{password},
+      gender=#{gender},
+      birth=#{birth},address=#{address},email=#{email},
+      tel=#{tel}, cp=#{cp}, answer=#{answer}
+      WHERE NO=#{no}       
+      
+   </update>
+ 
+   
+   
+
+</mapper>
+
+
+
+
+
+

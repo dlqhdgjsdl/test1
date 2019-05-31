@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration><!-- DB설정(Connection) -->
+   
+    <typeAliases>   
+     <typeAlias type="sist.com.model.SiMember" alias="member"/>
+     <typeAlias type="sist.com.model.ZipCodeBean" alias="zipcode"/>
+     <typeAlias type="sist.com.vo.BoardVO" alias="board"/>
+     <typeAlias type="sist.com.vo.StudentBean" alias="student"/>
+     <typeAlias type="sist.com.vo.BbsBean" alias="bbs"/>
+     
+    </typeAliases>
+    <!-- DB연동 -->
+    <environments default="development">
+      <environment id="development">
+        <transactionManager type="JDBC"/>
+        
+        <dataSource type="POOLED">        
+         <property name="driver" 
+            value="oracle.jdbc.driver.OracleDriver"/>
+         <property name="url" 
+            value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+         <property name="username" value="ORANGE"/>
+         <property name="password" value="1234"/>
+        </dataSource>
+       
+      </environment>
+    </environments>
+    <mappers>
+        <mapper resource="sist/com/dao/member-mapper.xml"/>  
+        <mapper resource="sist/com/dao/board-mapper.xml"/>  
+        <mapper resource="sist/com/dao/model.xml"/>  
+        <mapper resource="sist/com/dao/bbs-mapper.xml"/>  
+       
+    </mappers>
+</configuration>
+
+
+
+
+
+

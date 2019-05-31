@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sist.com.vo.BoardVO">
+
+	<resultMap type="board" id="selectBoardID">
+		<result property="no" column="no" />
+		<result property="rm" column="rm" />
+		<result property="state" column="state" />
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="writer" column="writer" />
+		<result property="password" column="password" />
+		<result property="hit" column="hit" />
+		<result property="fileName" column="fileName" />
+		<result property="regdate" column="regdate" />
+
+	</resultMap>
+	<parameterMap type="board" id="insertBoardID">
+		<!-- <parameter property="no" javaType="int"/> -->
+		<parameter property="id" javaType="String" />
+		<parameter property="title" javaType="String" />
+		<parameter property="writer" javaType="String" />
+		<parameter property="password" javaType="String" />
+		<parameter property="contents" javaType="String" />
+		<parameter property="hit" javaType="int" />
+		<parameter property="fileName" javaType="String" />
+		<!-- <parameter property="regdate" javaType="String"/> -->
+		<!-- <parameter property="ref" javaType="int"/> <parameter property="step" 
+			javaType="int"/> <parameter property="lev" javaType="int"/> <parameter property="pnum" 
+			javaType="int"/> <parameter property="reply" javaType="int"/> -->
+	</parameterMap>
+	<insert id="insertBoard" parameterMap="insertBoardID">
+		<!-- <selectKey keyProperty="no" order="BEFORE" resultType="java.lang.Integer"> 
+			SELECT BOARD_SEQ2.NEXTVAL FROM DUAL </selectKey> -->
+		INSERT INTO BOARD(NO,ID,TITLE,WRITER,PASSWORD,
+		CONTENTS,HIT,FILENAME,REGDATE)
+		VALUES(BOARD_SEQ2.NEXTVAL,?,?,?,?,?,?,?,sysdate)
+	</insert>
+
+	<select id="selectBoard" resultType="board" parameterType="HashMap"
+		resultMap="selectBoardID">
+		<!-- SELECT NO,ID,TITLE,WRITER,PASSWORD, HIT,FILENAME,TO_CHAR(REGDATE,'YYYY/MM/DD')REGDATE 
+			FROM BOARD ORDER BY NO DESC -->
+
+		SELECT RM,NO,ID,TITLE,WRITER,PASSWORD,TO_CHAR(REGDATE,'YYYY/MM/DD')REGDATE,
+		HIT,FILENAME,ROUND(SYSDATE-REGDATE,0)STATE
+		FROM(
+		SELECT ROWNUM RM,NO,ID,TITLE,WRITER,PASSWORD,
+		HIT,FILENAME,REGDATE
+		FROM(
+		SELECT NO,ID,TITLE,WRITER,PASSWORD,
+		HIT,FILENAME,REGDATE
+		FROM BOARD
+		<if test="query!=null">
+		 WHERE ${query} LIKE '%'||#{data}||'%'
+		</if>
+		ORDER BY NO DESC))
+		WHERE RM BETWEEN #{start} AND #{end}
+		
+
+	</select>
+
+	<select id="getTotalRow" parameterType="HashMap" resultType="java.lang.Integer">
+	   SELECT COUNT(*) FROM BOARD
+	   <if test="query!=null">
+	   <where>
+	      ${query} LIKE '%'||#{data}||'%'
+	   </where>
+	   </if>
+	</select>
+	<update id="updateHit" parameterType="java.lang.Integer">
+		UPDATE BOARD SET HIT=HIT+1
+		WHERE NO=#{VALUE}
+	</update>
+	<sql id="boardSQL">
+		SELECT NO,ID,TITLE,WRITER,PASSWORD,CONTENTS,
+		HIT,FILENAME,REGDATE,REF,STEP,LEV,PNUM,REPLY
+		FROM BOARD
+	</sql>
+	<select id="selectInfoBoard" parameterType="java.lang.Integer"
+		resultType="board">
+		<include refid="boardSQL"></include>
+		WHERE NO=#{value}
+
+	</select>
+	<select id="passCheck" parameterType="java.lang.Integer"
+		resultType="String">
+		SELECT PASSWORD FROM BOARD
+		WHERE NO=#{VALUE}
+	</select>
+
+	<delete id="deleteBoard" parameterType="int">
+		DELETE FROM BOARD WHERE NO=#{VALUE}
+	</delete>
+	
+<!-- 	private int    no;
+	private String id;
+	private String title;
+	private String writer;
+	private String password;
+	private String contents;
+	private int    hit;
+	private String fileName;
+	private String regdate;
+	private int    ref,step,lev,pnum,reply;
+	private String flag;
+	private int rm;
+	private int state; -->
+	<update id="updateBoard" parameterType="board">
+	  UPDATE BOARD SET title=#{title},writer=#{writer},
+	  password=#{password},
+	  contents=#{contents},fileName=#{fileName}
+	  WHERE NO=#{no}
+	</update>
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

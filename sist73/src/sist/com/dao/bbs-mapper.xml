@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sist.com.vo.Bbsbean">
+
+	<insert id="insertBbs" parameterType="bbs">
+		<selectKey keyProperty="no" order="BEFORE" resultType="int">
+			SELECT BBS_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO BBS VALUES(#{no},#{subject},#{author},#{password},
+		#{contents},'1.jpg',0,sysdate)
+	</insert>
+	<sql id="selectBbsSQL">
+		SELECT NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,FILENAME,
+		HIT,TO_CHAR(REGDATE,'YYYY/MM/DD')REGDATE
+		FROM BBS
+	</sql>
+	<select id="selectBbs" resultType="bbs" parameterType="HashMap">
+		SELECT RM,NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,FILENAME,HIT,REGDATE
+		FROM(SELECT ROWNUM RM,NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,FILENAME,HIT,REGDATE
+		FROM(SELECT NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,FILENAME,HIT,REGDATE
+		FROM BBS
+		ORDER BY NO DESC))
+		WHERE RM BETWEEN #{start} AND #{end}
+	</select>
+
+	<select id="bbsInfo" resultType="bbs" parameterType="int">
+		<include refid="selectBbsSQL"></include>
+		<where>
+			NO=#{VALUE}
+		</where>
+	</select>
+	<update id="updateHit" parameterType="int">
+		UPDATE BBS SET HIT=HIT+1
+		WHERE NO=#{NO}
+
+		<!-- UPDATE BBS SET subject=#{subject},author=#{author}, password=#{password},contents=#{contents} 
+			where no=#{no} -->
+	</update>
+
+	<select id="dbPassCheck" parameterType="int" resultType="String">
+		SELECT PASSWORD FROM BBS WHERE NO=#{VALUE}
+	</select>
+
+	<select id="gettotalBbsRow" resultType="Integer">
+		SELECT COUNT(*) FROM BBS
+	</select>
+
+
+	<update id="updateBbs" parameterType="bbs">
+		UPDATE BBS SET subject=#{subject},author=#{author},
+		password=#{password},contents=#{contents}
+		where no=#{no}
+	</update>
+	<delete id="deleteBbs">
+		DELETE FROM BBS WHERE NO=#{no}
+	</delete>
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
